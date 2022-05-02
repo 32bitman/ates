@@ -1,0 +1,17 @@
+{
+  "name": "oauth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kiryl Barysevich",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.2",
+    "node-oauth2-server": "^2.4.0",
+    "pg": "^8.7.1"
+  }
+}

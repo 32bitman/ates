@@ -1,0 +1,12 @@
+{
+  "name": "ates",
+  "version": "1.0.0",
+  "description": "Awesome Task Exchange System (aTES) for UberPopug Inc",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:oauth": "npm start --prefix ./src/oauth/src"
+  },
+  "author": "Kiryl Barysevich",
+  "license": "ISC"
+}

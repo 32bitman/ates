@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - 2181:2181
+    networks:
+      - ates_network
+
+  kafka:
+    image: wurstmeister/kafka:2.13-2.7.0
+    ports:
+      - 9092:9092
+    links:
+      - zookeeper:zk
+    environment:
+      KAFKA_NUM_PARTITIONS: 8
+      KAFKA_BROKER_ID: 4
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zk:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .dev/kafka-data:/kafka
+    networks:
+      - ates_network
+
+  mongo:
+    image: mongo:4.2
+    ports:
+      - 27018:27017
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .dev/mongo/:/data/db/
+    networks:
+      - ates_network
+
+  postgres:
+    image: postgres:13.1
+    ports:
+      - 5432:5432
+    volumes:
+      - .dev/postgres/:/var/lib/postgresql/data
+    networks:
+      - ates_network
+    environment:
+      POSTGRES_PASSWORD: gopass
+
+  elasticsearch:
+    image: elasticsearch:7.6.0
+    platform: linux/amd64
+    ports:
+      - 9200:9200
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .dev/elasticsearch/:/usr/share/elasticsearch/data/
+    networks:
+      - ates_network
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6380:6379
+    networks:
+      - ates_network
+
+networks:
+  ates_network:
+    name: ates

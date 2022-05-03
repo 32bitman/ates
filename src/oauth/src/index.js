@@ -4,7 +4,7 @@ const tokenDB = require("./db/tokenDB")(pgPool);
 const userDB = require("./db/userDB")(pgPool);
 
 // OAuth imports
-const oAuthService = require("./auth/tokenService")(userDB, tokenDB);
+const oAuthService = require("./auth/model")(userDB, tokenDB);
 const oAuth2Server = require("node-oauth2-server");
 
 // Express
@@ -16,7 +16,7 @@ app.oauth = oAuth2Server({
   debug: true,
 });
 
-const testAPIService = require("./test/testAPIService.js");
+const testAPIService = require("./test/testAPIService.js")(userDB);
 const testAPIRoutes = require("./test/testAPIRoutes.js")(
   express.Router(),
   app,

@@ -7,6 +7,7 @@ module.exports = (injectedPgPool) => {
     register,
     getUser,
     isValidUser,
+    list,
   };
 };
 
@@ -14,41 +15,39 @@ console.log(pgPool);
 
 var crypto = require("crypto");
 
-function register(username, password, cbFunc) {
+function register(username, password) {
   var shaPass = crypto.createHash("sha256").update(password).digest("hex");
 
   const query = `INSERT INTO users (username, user_password) VALUES ('${username}', '${shaPass}')`;
 
-  pgPool.query(query, cbFunc);
+  return pgPool.query(query);
 }
 
-function getUser(username, password, cbFunc) {
+async function list() {
+  const listQuery = 'SELECT id, username FROM users';
+
+  const result = await pgPool.query(listQuery);
+  console.log(result);
+
+  return result.rows;
+}
+
+function getUser(username, password) {
   var shaPass = crypto.createHash("sha256").update(password).digest("hex");
 
   const getUserQuery = `SELECT * FROM users WHERE username = '${username}' AND user_password = '${shaPass}'`;
 
-  pgPool.query(getUserQuery, (response) => {
-    cbFunc(
-      false,
-      response.results && response.results.rowCount === 1
-        ? response.results.rows[0]
-        : null
-    );
-  });
+  return pgPool.query(getUserQuery);
 }
 
-function isValidUser(username, cbFunc) {
+async function isValidUser(username) {
   const query = `SELECT * FROM users WHERE username = '${username}'`;
-  console.log("hi");
-  const checkUsrcbFunc = (response) => {
-    const isValidUser = response.results
-      ? !(response.results.rowCount > 0)
-      : null;
 
-    console.log(isValidUser);
+  const response = await pgPool.query(query);
 
-    cbFunc(response.error, isValidUser);
-  };
+  const isValidUser = response.results
+    ? !(response.results.rowCount > 0)
+    : null;
 
-  pgPool.query(query, checkUsrcbFunc);
+  return isValidUser;
 }

@@ -9,33 +9,17 @@ module.exports = (injectedUserDB) => {
   };
 };
 
-function registerUser(req, res) {
-  userDB.isValidUser(req.body.username, (error, isValidUser) => {
-    if (error || !isValidUser) {
-      const message = error
-        ? "Something went wrong!"
-        : "This user already exists!";
+async function registerUser(req, res) {
+  const isUserExists = await userDB.isValidUser(req.body.username);
 
-      sendResponse(res, message, error);
 
-      return;
-    }
+  if (isUserExists) {
+    return res.status(400).send({ message: 'This user already exists!' });
+  }
 
-    userDB.register(req.body.username, req.body.password, (response) => {
-      sendResponse(
-        res,
-        response.error === undefined ? "Success!!" : "Something went wrong!",
-        response.error
-      );
-    });
-  });
+  await userDB.register(req.body.username, req.body.password);
+
+  res.status(200).json({ message: 'Success!!!' });
 }
 
 function login(query, res) {}
-
-function sendResponse(res, message, error) {
-  res.status(error !== undefined ? 400 : 200).json({
-    message: message,
-    error: error,
-  });
-}

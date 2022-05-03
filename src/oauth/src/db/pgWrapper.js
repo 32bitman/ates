@@ -1,6 +1,6 @@
 const { Pool } = require("pg");
 
-function query(queryRaw, cbFunc) {
+function query(queryRaw) {
   const pool = new Pool({
     user: "postgres",
     host: "localhost",
@@ -9,16 +9,7 @@ function query(queryRaw, cbFunc) {
     port: 5432,
   });
 
-  pool.query(queryRaw, (error, results) => {
-    cbFunc(setResponse(error, results));
-  });
-}
-
-function setResponse(error, results) {
-  return {
-    error: error,
-    results: results ? results : null,
-  };
+  return pool.query(queryRaw);
 }
 
 module.exports = {
